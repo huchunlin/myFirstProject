@@ -1,0 +1,53 @@
+添加SSH key就可以在提交代码的时候不需要每次都输入密码了。
+
+方法/步骤
+首先要检查key是不是已经存在，
+打开一个终端，并输入以下命令：
+$ ls -al ~/.ssh
+如果结果列表中包含以下文件， 则不需要在生成新的KEY， 可以直接使用。
+id_dsa.pub
+id_ecdsa.pub
+id_ed25519.pub
+id_rsa.pub
+
+
+如果不存在， 则需要创建新的Key来使用。
+输入下面的命令来生成key， 注意替换你自己的邮箱地址。
+$ ssh-keygen -t rsa -C "your_email@example.com"
+
+# Creates a new ssh key using the provided email
+Generating public/private rsa key pair.
+Enter file in which to save the key (/your_home_path/.ssh/id_rsa):
+这里在提示你保存key的位置， 默认直接回车就可以。
+Enter passphrase (empty for no passphrase):
+当你看到这个的时候， 输入你的密码。
+Enter same passphrase again:
+再次输入， 以确认密码。
+当以上步骤成功完成后， 你将看到类似与这样的结果：
+Your identification has been saved in /your_home_path/.ssh/id_rsa.
+Your public key has been saved in /your_home_path/.ssh/id_rsa.pub.
+The key fingerprint is:
+01:0f:f4:3b:ca:85:d6:17:a1:7d:f0:68:9d:f0:a2:db your_email@example.com
+
+
+在用户主目录里找到.ssh目录，里面有id_rsa和id_rsa.pub两个文件，这两个就是SSH Key的秘钥对，id_rsa是私钥，
+不能泄露出去，id_rsa.pub是公钥，可以放心的添加。
+（http://www.liaoxuefeng.com/wiki/0013739516305929606dd18361248578c67b8067c8c017b000/001374385852170d9c7adf13c30429b9660d0eb689dd43a000）
+
+
+
+执行以下命令将KEY加入到ssh-agent:
+$ eval "$(ssh-agent -s)"
+# Agent pid 59566
+$ ssh-add ~/.ssh/id_rsa
+打开 ~/.ssh/id_rsa.pub文件， 复制其中所有的内容。然后把它粘贴到github的ssh key添加的表单中。
+执行以下命令来测试key。
+$ ssh -T git@github.com
+如果你看到：
+The authenticity of host 'github.com (207.97.227.239)' can't be established.
+RSA key fingerprint is 16:27:ac:a5:76:28:2d:36:63:1b:56:4d:eb:df:a6:48.
+Are you sure you want to continue connecting (yes/no)?
+输入“yes”并回车。
+当你看到以下内容时， 你就添加成功了。
+Hi username! You've successfully authenticated, but GitHub does not
+provide shell access.
